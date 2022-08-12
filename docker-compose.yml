@@ -24,21 +24,10 @@ services:
     image: redis
     networks:
       - internal
-#     - default
-#   ports:
-#     - "6379:6379"
   postgis:
     image: mapcentia/postgis
-    volumes:
-      - postgis_var_lib_postgresql:/var/lib/postgresql
-      - postgis_var_log:/var/log
-      - postgis_etc_postgresql:/etc/postgresql
-      - postgis_etc_pgbouncer:/etc/pgbouncer
     networks:
       - internal
-#     - default
-#   ports:
-#     - "5432:5432"
     environment:
       - GC2_USER=gc2
       - GC2_PASSWORD=1234
@@ -52,13 +41,7 @@ services:
       - "3000:3000"
     environment:
       - GC2_HOST=http://gc2core
-
-volumes:
-  postgis_var_log:
-  postgis_etc_postgresql:
-  postgis_var_lib_postgresql:
-  postgis_etc_pgbouncer:
-
+      
 
 
 
