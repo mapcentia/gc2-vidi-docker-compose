@@ -6,32 +6,65 @@ networks:
 
 services:
   gc2core:
-    image: mapcentia/gc2core
+    image: mapcentia/gc2core8
     privileged: true
     networks:
       - internal
       - default
     ports:
       - "8080:80"
-    environment:
-      - POSTGIS_HOST=postgis
-      - POSTGIS_DB=postgres
-      - POSTGIS_USER=gc2
-      - POSTGIS_PORT=5432
-      - POSTGIS_PW=1234
-      - POSTGIS_PGBOUNCER=false
+    expose:
+      - 9000
+    env_file:
+      - ./default.env
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
   redis:
-    image: redis
+    image: redis:6.2.6
     networks:
       - internal
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+
   postgis:
-    image: mapcentia/postgis
+    image: mapcentia/postgis13
+    volumes:
+      - postgis_var_lib_postgresql:/var/lib/postgresql
+      - postgis_etc_pgbouncer:/etc/pgbouncer/
     networks:
       - internal
-    environment:
-      - GC2_USER=gc2
-      - GC2_PASSWORD=1234
-      - GC2_LOCALE=da_DK.UTF-8
+    env_file:
+      - ./default.env
+    environment: # Override so migration script can be run at first "up"
+      - POSTGIS_HOST=localhost
+      - POSTGIS_PORT=5432
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 4G
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+
   vidi:
     image: mapcentia/vidi
     networks:
@@ -41,8 +74,14 @@ services:
       - "3000:3000"
     environment:
       - GC2_HOST=http://gc2core
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
       
-
+volumes:
+  postgis_var_lib_postgresql:
+  postgis_etc_pgbouncer:
 
 
 
