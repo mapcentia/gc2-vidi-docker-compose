@@ -44,7 +44,7 @@ services:
         max-size: "50m"
 
   postgis:
-    image: mapcentia/postgis13
+    image: mapcentia/postgis15
     volumes:
       - postgis_var_lib_postgresql:/var/lib/postgresql
       - postgis_etc_pgbouncer:/etc/pgbouncer/
